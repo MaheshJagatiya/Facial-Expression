@@ -1,167 +1,154 @@
-
+﻿
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class TalkMovement : MonoBehaviour
 {
-    /// <summary>
-    /// this file code manage lip movement and eye movement of character
-    /// </summary>
     [Header("Assign Face SkinnedMeshRenderer here")]
     public SkinnedMeshRenderer skinnedMesh;
 
     [Header("Mouth movement settings")]
     [Range(0f, 100f)] public float maxWeight = 60f;
-    public float lerpSpeed = 15f;
-    public Vector2 holdTimeRange = new Vector2(0.05f, 0.12f);
+    public float openCloseLerpSpeed = 15f;     // how fast mouth follows audio
+    public string mouthOpenBlendShapeName = "MouthOpen"; // or Jaw_Down, etc.
+
+    [Header("Eye settings (unchanged)")]
+    public int[] eyeBlink;
 
     public AudioSource voiceAudioSource;
 
-    int[] mouthShapeIndices;
-    public int[] eyeBlink;
-    Coroutine talkRoutine;
+    int mouthOpenIndex = -1;
+    float currentMouthWeight = 0f;
+    bool isTalking = false;
+
     Coroutine eyeRoutine;
 
-  
+    // Re-use one sample buffer (no GC)
+    float[] audioSamples = new float[1024];
+
     void Awake()
     {
-        CacheMouthShapes();    
+        CacheMouthShapeIndex();
     }
 
-    void CacheMouthShapes()
+    void CacheMouthShapeIndex()
     {
         var mesh = skinnedMesh.sharedMesh;
-        var list = new List<int>();
-
         for (int i = 0; i < mesh.blendShapeCount; i++)
         {
             string name = mesh.GetBlendShapeName(i);
-
-            // Sirf Mouth se start hone wale shapes lo
-            if (!name.StartsWith("Mouth", System.StringComparison.OrdinalIgnoreCase))
-                continue;
-
-            // Skip Naarow 
-            if (name.Contains("Narrow"))
-                continue;
-
-            list.Add(i);
-            //Add more moth open movement
-            if(name.Contains("MouthOpen"))
+            if (name.Equals(mouthOpenBlendShapeName, System.StringComparison.OrdinalIgnoreCase))
             {
-                list.Add(i);
-                list.Add(i);
+                mouthOpenIndex = i;
+                break;
             }
         }
-        mouthShapeIndices = list.ToArray();       
+
+        if (mouthOpenIndex == -1)
+        {
+            Debug.LogWarning("Mouth blendshape not found: " + mouthOpenBlendShapeName);
+        }
+    }
+
+    void Update()
+    {
+        if (!isTalking || mouthOpenIndex == -1)
+            return;
+
+        // Read audio data
+        if (!voiceAudioSource.isPlaying)
+        {
+            // Audio finished → close mouth gradually
+            currentMouthWeight = Mathf.Lerp(currentMouthWeight, 0f, Time.deltaTime * openCloseLerpSpeed);
+        }
+        else
+        {
+            voiceAudioSource.GetOutputData(audioSamples, 0);
+
+            // Compute loudness (RMS)
+            float sum = 0f;
+            for (int i = 0; i < audioSamples.Length; i++)
+            {
+                float vValue = audioSamples[i];
+                sum += vValue * vValue;
+            }
+            float rms = Mathf.Sqrt(sum / audioSamples.Length); // 0–1 approx
+
+            //  Convert to target mouth weight
+            // You can adjust the multiplier (for sensitivity)
+            float targetWeight = Mathf.Clamp01(rms * 15f) * maxWeight;
+
+            // Smooth follow
+            currentMouthWeight = Mathf.Lerp(currentMouthWeight, targetWeight, Time.deltaTime * openCloseLerpSpeed);
+        }
+
+        // Apply to blendshape
+        skinnedMesh.SetBlendShapeWeight(mouthOpenIndex, currentMouthWeight);
     }
 
     public void StartTalking()
     {
-        if (talkRoutine != null)
-            StopCoroutine(talkRoutine);
-
+        
         if (eyeRoutine != null)
             StopCoroutine(eyeRoutine);
 
-        talkRoutine = StartCoroutine(TalkRoutine());
-        eyeRoutine = StartCoroutine(BlinkEye());
-        voiceAudioSource.Play();
+        eyeRoutine = StartCoroutine(BlinkEye());  
+
+       
+        isTalking = true;
+        currentMouthWeight = 0f;
+        if (!voiceAudioSource.isPlaying)
+            voiceAudioSource.Play();
     }
 
     public void StopTalking()
     {
-        if (talkRoutine != null)
-            StopCoroutine(talkRoutine);
-
+        isTalking = false;
+      
+        currentMouthWeight = 0f;
+        if (mouthOpenIndex != -1)
+            skinnedMesh.SetBlendShapeWeight(mouthOpenIndex, 0f);
+      
         if (eyeRoutine != null)
             StopCoroutine(eyeRoutine);
 
-        // sab mouth shapes reset
-        foreach (int index in mouthShapeIndices)
-            skinnedMesh.SetBlendShapeWeight(index, 0f);
-
-        skinnedMesh.SetBlendShapeWeight(0, 0f);
-        skinnedMesh.SetBlendShapeWeight(1, 0f);
+        foreach (int i in eyeBlink)
+            skinnedMesh.SetBlendShapeWeight(i, 0f);
 
         voiceAudioSource.Stop();
     }
-
-    IEnumerator TalkRoutine()
-    {
-        while (true)
-        {
-            if (mouthShapeIndices.Length == 0)
-                yield break;
-
-            // 1) random mouth shape choose
-            int index = mouthShapeIndices[Random.Range(0, mouthShapeIndices.Length)];
-
-            // 2) sab mouth shapes first zero
-            foreach (int i in mouthShapeIndices)
-                skinnedMesh.SetBlendShapeWeight(i, 0f);
-
-            float target = Random.Range(maxWeight * 0.4f, maxWeight);
-
-            // 3) open
-            float t = 0f;
-            while (t < 1f)
-            {
-                t += Time.deltaTime * lerpSpeed;
-                float w = Mathf.Lerp(0f, target, t);
-                skinnedMesh.SetBlendShapeWeight(index, w);
-                yield return null;
-            }
-
-            // 4) few time hold
-            yield return new WaitForSeconds(Random.Range(holdTimeRange.x, holdTimeRange.y));
-
-            // 5) close
-            t = 0f;
-            while (t < 1f)
-            {
-                t += Time.deltaTime * lerpSpeed;
-                float w = Mathf.Lerp(target, 0f, t);
-                skinnedMesh.SetBlendShapeWeight(index, w);
-                yield return null;
-            }
-        }
-    }
     IEnumerator BlinkEye()
     {
+       
         while (true)
         {
             yield return new WaitForSeconds(Random.Range(3, 6));
             if (eyeBlink.Length == 0)
-                yield break;          
+                yield break;
 
-            // 1) Every mouth shape zero first
             foreach (int i in eyeBlink)
                 skinnedMesh.SetBlendShapeWeight(i, 0f);
 
             float target = 100;
 
-            // 3) open
             float t = 0f;
             while (t < 1f)
             {
-                t += Time.deltaTime * lerpSpeed;
-                float w = Mathf.Lerp(0f, target, t);
+                t += Time.deltaTime * openCloseLerpSpeed;
+                float w = Mathf.Lerp(0, target, t);
                 skinnedMesh.SetBlendShapeWeight(0, w);
                 skinnedMesh.SetBlendShapeWeight(1, w);
                 yield return null;
             }
 
-            // 4) some hold
             yield return new WaitForSeconds(0.1f);
 
-            // 5) close
             t = 0f;
             while (t < 1f)
             {
-                t += Time.deltaTime * lerpSpeed;
-                float w = Mathf.Lerp(target, 0f, t);
+                t += Time.deltaTime * openCloseLerpSpeed;
+                float w = Mathf.Lerp(target, 0, t);
                 skinnedMesh.SetBlendShapeWeight(0, w);
                 skinnedMesh.SetBlendShapeWeight(1, w);
                 yield return null;
