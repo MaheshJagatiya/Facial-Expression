@@ -15,13 +15,14 @@ public class TalkMovement : MonoBehaviour
 
     [Header("Eye settings (unchanged)")]
     public int[] eyeBlink;
+    public AudioClip[] soundClip;
 
     public AudioSource voiceAudioSource;
 
     int mouthOpenIndex = -1;
     float currentMouthWeight = 0f;
     bool isTalking = false;
-
+    bool isFirstSound = false;
     Coroutine eyeRoutine;
 
     // Re-use one sample buffer (no GC)
@@ -154,5 +155,17 @@ public class TalkMovement : MonoBehaviour
                 yield return null;
             }
         }
+    }
+
+    public void ChangeSoundContain()
+    {
+        StopTalking();
+        if (isFirstSound)
+            voiceAudioSource.clip = soundClip[0];
+        else
+            voiceAudioSource.clip = soundClip[1];
+        isFirstSound = !isFirstSound;
+
+        StartTalking();
     }
 }

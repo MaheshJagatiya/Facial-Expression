@@ -12,14 +12,19 @@ public class GameManager : MonoBehaviour
     public TalkMovement talkMovementManage;
     [SerializeField] private Button smilePlayButton;
     [SerializeField] private Button recordPlayButton;
+    [SerializeField] private Button changeSoundPlayButton;
     [SerializeField] bool isSmileAnimationRunning; 
     void Start()
     {
         smilePlayButton.onClick.RemoveListener(StartSmileAnimationEvent);
         smilePlayButton.onClick.AddListener(StartSmileAnimationEvent);
+       
 
         recordPlayButton.onClick.RemoveListener(StartRecordVoice);
         recordPlayButton.onClick.AddListener(StartRecordVoice);
+
+        changeSoundPlayButton.onClick.RemoveListener(ChangeRecourSoundVoice);
+        changeSoundPlayButton.onClick.AddListener(ChangeRecourSoundVoice);
 
 
         StartSmileAnimationEvent();
@@ -48,5 +53,11 @@ public class GameManager : MonoBehaviour
         if (isSmileAnimationRunning) return;
         smileAnimator.enabled = false;
         talkMovementManage.StartTalking();
+    }
+    public void ChangeRecourSoundVoice()
+    {
+        if (isSmileAnimationRunning) return;
+
+        talkMovementManage.ChangeSoundContain();
     }
 }
