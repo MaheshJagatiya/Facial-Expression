@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
+
+
 /// <summary>
 /// This file Manage which animation and recorder play for event
 /// </summary>
@@ -10,6 +12,7 @@ public class GameManager : MonoBehaviour
 {
     public Animator smileAnimator;
     public TalkMovement talkMovementManage;
+    public RuntimeAnimatorController[] animaController;
     [SerializeField] private Button smilePlayButton;
     [SerializeField] private Button recordPlayButton;
     [SerializeField] private Button changeSoundPlayButton;
@@ -34,6 +37,7 @@ public class GameManager : MonoBehaviour
         if (isSmileAnimationRunning) return;
 
         isSmileAnimationRunning = true;
+        smileAnimator.runtimeAnimatorController = animaController[0];
         talkMovementManage.StopTalking();
         StartCoroutine(StartSmileAnimation());
     }
@@ -51,13 +55,14 @@ public class GameManager : MonoBehaviour
     public void StartRecordVoice()
     {
         if (isSmileAnimationRunning) return;
-        smileAnimator.enabled = false;
-        talkMovementManage.StartTalking();
+        smileAnimator.enabled = true;
+        smileAnimator.runtimeAnimatorController = animaController[1];
+        talkMovementManage.StartTalking(smileAnimator);
     }
     public void ChangeRecourSoundVoice()
     {
         if (isSmileAnimationRunning) return;
-
+      
         talkMovementManage.ChangeSoundContain();
     }
 }

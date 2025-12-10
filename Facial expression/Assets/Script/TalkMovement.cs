@@ -24,8 +24,9 @@ public class TalkMovement : MonoBehaviour
     bool isTalking = false;
     bool isFirstSound = false;
     Coroutine eyeRoutine;
-
-    // Re-use one sample buffer (no GC)
+    Coroutine faceExpRoutine;
+    Animator facexpresionAnimator;
+   
     float[] audioSamples = new float[1024];
 
     void Awake()
@@ -88,15 +89,19 @@ public class TalkMovement : MonoBehaviour
         skinnedMesh.SetBlendShapeWeight(mouthOpenIndex, currentMouthWeight);
     }
 
-    public void StartTalking()
+    public void StartTalking(Animator animatorFacialEx)
     {
-        
+        facexpresionAnimator = animatorFacialEx;
         if (eyeRoutine != null)
             StopCoroutine(eyeRoutine);
 
-        eyeRoutine = StartCoroutine(BlinkEye());  
+        if (faceExpRoutine != null)
+            StopCoroutine(faceExpRoutine);
+        
 
-       
+        eyeRoutine = StartCoroutine(BlinkEye());
+        faceExpRoutine = StartCoroutine(PlayRandomFaceAnimation());
+
         isTalking = true;
         currentMouthWeight = 0f;
         if (!voiceAudioSource.isPlaying)
@@ -113,6 +118,9 @@ public class TalkMovement : MonoBehaviour
       
         if (eyeRoutine != null)
             StopCoroutine(eyeRoutine);
+
+        if (faceExpRoutine != null)
+            StopCoroutine(faceExpRoutine);
 
         foreach (int i in eyeBlink)
             skinnedMesh.SetBlendShapeWeight(i, 0f);
@@ -166,6 +174,16 @@ public class TalkMovement : MonoBehaviour
             voiceAudioSource.clip = soundClip[1];
         isFirstSound = !isFirstSound;
 
-        StartTalking();
+        StartTalking(facexpresionAnimator);
+    }
+    IEnumerator PlayRandomFaceAnimation()
+    {
+        while (true)
+        {
+            int r = Random.Range(1, 7); // 1 to 6
+            facexpresionAnimator.Play("Face" + r, 0, 0f); // plays animation from start
+
+            yield return new WaitForSeconds(Random.Range(2, 6));
+        }
     }
 }

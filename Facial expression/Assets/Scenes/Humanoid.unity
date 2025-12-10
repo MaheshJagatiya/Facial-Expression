@@ -678,6 +678,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2217112278697918902, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
+      propertyPath: 'm_BlendShapeWeights.Array.data[7]'
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2217112278697918902, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
+      propertyPath: 'm_BlendShapeWeights.Array.data[36]'
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3393541662556081762, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -710,9 +718,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3919276971584820552, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4873048748265475243, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5154200993814262186, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.008571976
+      objectReference: {fileID: 0}
+    - target: {fileID: 5154200993814262186, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.023246136
       objectReference: {fileID: 0}
     - target: {fileID: 5468375929685735150, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
       propertyPath: m_IsActive
@@ -724,12 +744,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6417604267003355509, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6417604267003355509, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: c9afe8bc5577f824a8115c13d87bb613, type: 2}
+      objectReference: {fileID: 9100000, guid: 98733c2f3fa6a6141b7a70ca0d100bc4, type: 2}
     - target: {fileID: 6510193143465828182, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
@@ -749,6 +769,26 @@ PrefabInstance:
     - target: {fileID: 6879123386476695705, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7129312792339491702, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.07176605
+      objectReference: {fileID: 0}
+    - target: {fileID: 7129312792339491702, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.0054672603
+      objectReference: {fileID: 0}
+    - target: {fileID: 7170187827754302176, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7360390668057073804, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7571369396323239361, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8515986027966012282, guid: a3ba3b3fd882ee24a807a02093a601e7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1383,6 +1423,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   smileAnimator: {fileID: 859392146}
   talkMovementManage: {fileID: 1956083051}
+  animaController:
+  - {fileID: 9100000, guid: c9afe8bc5577f824a8115c13d87bb613, type: 2}
+  - {fileID: 9100000, guid: 98733c2f3fa6a6141b7a70ca0d100bc4, type: 2}
   smilePlayButton: {fileID: 1473660849}
   recordPlayButton: {fileID: 739405449}
   changeSoundPlayButton: {fileID: 1649751713}
