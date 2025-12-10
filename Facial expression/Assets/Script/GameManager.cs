@@ -35,14 +35,16 @@ public class GameManager : MonoBehaviour
     public void StartSmileAnimationEvent()
     {
         if (isSmileAnimationRunning) return;
-
+       
         isSmileAnimationRunning = true;
-        smileAnimator.runtimeAnimatorController = animaController[0];
         talkMovementManage.StopTalking();
+        smileAnimator.runtimeAnimatorController = animaController[0];
+       
         StartCoroutine(StartSmileAnimation());
     }
     IEnumerator StartSmileAnimation()
-    {       
+    {
+      
         smileAnimator.enabled = true;
         smileAnimator.SetBool("PlaySeq", true);
         smileAnimator.Play("Ideal", 0, 0f);    
@@ -62,7 +64,8 @@ public class GameManager : MonoBehaviour
     public void ChangeRecourSoundVoice()
     {
         if (isSmileAnimationRunning) return;
-      
-        talkMovementManage.ChangeSoundContain();
+        smileAnimator.enabled = true;
+        smileAnimator.runtimeAnimatorController = animaController[1];
+        talkMovementManage.ChangeSoundContain(smileAnimator);
     }
 }

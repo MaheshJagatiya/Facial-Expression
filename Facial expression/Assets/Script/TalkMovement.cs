@@ -26,17 +26,18 @@ public class TalkMovement : MonoBehaviour
     Coroutine eyeRoutine;
     Coroutine faceExpRoutine;
     Animator facexpresionAnimator;
-   
+    Mesh mesh;
     float[] audioSamples = new float[1024];
 
     void Awake()
     {
+        mesh = skinnedMesh.sharedMesh;
         CacheMouthShapeIndex();
     }
 
     void CacheMouthShapeIndex()
     {
-        var mesh = skinnedMesh.sharedMesh;
+        //var mesh = skinnedMesh.sharedMesh;
         for (int i = 0; i < mesh.blendShapeCount; i++)
         {
             string name = mesh.GetBlendShapeName(i);
@@ -112,20 +113,20 @@ public class TalkMovement : MonoBehaviour
     {
         isTalking = false;
       
-        currentMouthWeight = 0f;
-        if (mouthOpenIndex != -1)
-            skinnedMesh.SetBlendShapeWeight(mouthOpenIndex, 0f);
-      
+        currentMouthWeight = 0f;     
         if (eyeRoutine != null)
             StopCoroutine(eyeRoutine);
 
         if (faceExpRoutine != null)
             StopCoroutine(faceExpRoutine);
 
-        foreach (int i in eyeBlink)
+        SetIdealAllMesh();    
+        voiceAudioSource.Stop(); 
+    }
+    void SetIdealAllMesh()
+    {
+        for (int i = 0; i < mesh.blendShapeCount; i++)
             skinnedMesh.SetBlendShapeWeight(i, 0f);
-
-        voiceAudioSource.Stop();
     }
     IEnumerator BlinkEye()
     {
@@ -165,8 +166,9 @@ public class TalkMovement : MonoBehaviour
         }
     }
 
-    public void ChangeSoundContain()
+    public void ChangeSoundContain(Animator animatorFacialEx)
     {
+        facexpresionAnimator = animatorFacialEx;
         StopTalking();
         if (isFirstSound)
             voiceAudioSource.clip = soundClip[0];
