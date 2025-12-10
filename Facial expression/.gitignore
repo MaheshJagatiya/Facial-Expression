@@ -1,0 +1,46 @@
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+UserSettings/
+[Aa]sset[Ss]tore/
+
+# Crash Reports
+sysinfo.txt
+
+# Cache / Auto-generated files
+*.pidb
+*.suo
+*.user
+*.userprefs
+*.csproj
+*.unityproj
+*.sln
+*.tmp
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# IDE folders
+.vs/
+.idea/
+
+# Rider / JetBrains
+*.DotSettings
+
+# Addressables cache
+/[Ss]erverData/
+
+# Build results
+*.apk
+*.aab
+*.unitypackage
+
+# Meta files should stay (needed by Unity)
+!*.meta
