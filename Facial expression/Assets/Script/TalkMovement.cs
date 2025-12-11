@@ -15,17 +15,13 @@ public class TalkMovement : MonoBehaviour
 
     [Header("Eye settings (unchanged)")]
     public int[] eyeBlink;
-    public AudioClip[] soundClip;
-
     public AudioSource voiceAudioSource;
 
     int mouthOpenIndex = -1;
     float currentMouthWeight = 0f;
     bool isTalking = false;
-    bool isFirstSound = false;
+
     Coroutine eyeRoutine;
-    Coroutine faceExpRoutine;
-    Animator facexpresionAnimator;
     Mesh mesh;
     float[] audioSamples = new float[1024];
 
@@ -37,7 +33,7 @@ public class TalkMovement : MonoBehaviour
 
     void CacheMouthShapeIndex()
     {
-        //var mesh = skinnedMesh.sharedMesh;
+      
         for (int i = 0; i < mesh.blendShapeCount; i++)
         {
             string name = mesh.GetBlendShapeName(i);
@@ -86,23 +82,17 @@ public class TalkMovement : MonoBehaviour
             currentMouthWeight = Mathf.Lerp(currentMouthWeight, targetWeight, Time.deltaTime * openCloseLerpSpeed);
         }
 
-        // Apply to blendshape
+      
         skinnedMesh.SetBlendShapeWeight(mouthOpenIndex, currentMouthWeight);
     }
 
-    public void StartTalking(Animator animatorFacialEx)
+    public void StartTalking()
     {
-        facexpresionAnimator = animatorFacialEx;
+       
         if (eyeRoutine != null)
             StopCoroutine(eyeRoutine);
-
-        if (faceExpRoutine != null)
-            StopCoroutine(faceExpRoutine);
-        
-
         eyeRoutine = StartCoroutine(BlinkEye());
-        faceExpRoutine = StartCoroutine(PlayRandomFaceAnimation());
-
+    
         isTalking = true;
         currentMouthWeight = 0f;
         if (!voiceAudioSource.isPlaying)
@@ -117,8 +107,7 @@ public class TalkMovement : MonoBehaviour
         if (eyeRoutine != null)
             StopCoroutine(eyeRoutine);
 
-        if (faceExpRoutine != null)
-            StopCoroutine(faceExpRoutine);
+        
 
         SetIdealAllMesh();    
         voiceAudioSource.Stop(); 
@@ -166,26 +155,5 @@ public class TalkMovement : MonoBehaviour
         }
     }
 
-    public void ChangeSoundContain(Animator animatorFacialEx)
-    {
-        facexpresionAnimator = animatorFacialEx;
-        StopTalking();
-        if (isFirstSound)
-            voiceAudioSource.clip = soundClip[0];
-        else
-            voiceAudioSource.clip = soundClip[1];
-        isFirstSound = !isFirstSound;
-
-        StartTalking(facexpresionAnimator);
-    }
-    IEnumerator PlayRandomFaceAnimation()
-    {
-        while (true)
-        {
-            int r = Random.Range(1, 7); // 1 to 6
-            facexpresionAnimator.Play("Face" + r, 0, 0f); // plays animation from start
-
-            yield return new WaitForSeconds(Random.Range(2, 6));
-        }
-    }
+   
 }
